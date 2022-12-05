@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -42,73 +43,6 @@ class MainActivity : ComponentActivity() {
                     MyNavDrawerApp()
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun MyNavDrawerApp() {
-    /**
-     * scaffoldState merupakan state bawaan dari scaffold untuk mengatur elemen di dalamnya dengan animasi default.
-     * di dalamnya terdapat dua state, yakni drawer state untuk mengatur navigation drawer
-     * dan snackbarHostState untuk mengatur Snackbar
-     */
-    val scaffoldState = rememberScaffoldState()
-
-    /**
-     * rememberCoroutineScope digunakan untuk memanggil Coroutine di dalam composable.
-     * karena fungsi open merupakan suspend function, anda perlu menggunakan coroutine scope untuk memanggilnya
-     *
-     */
-    val scope = rememberCoroutineScope()
-
-    val context = LocalContext.current
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            MyTopBar(onMenuClick = {
-                scope.launch {
-                    scaffoldState.drawerState.open()
-                }
-            })
-        },
-        drawerContent = {
-            MyDrawerContent(
-                onItemSelected = { title ->
-                    scope.launch {
-                        scaffoldState.drawerState.close()
-                        val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                            message = context.resources.getString(R.string.coming_soon, title),
-                            actionLabel = context.resources.getString(R.string.subscribe_question)
-                        )
-
-                        // membaca aksi yang diberikan pada snackbar
-                        if (snackbarResult == SnackbarResult.ActionPerformed){
-                            Toast.makeText(context, context.resources.getString(R.string.subscribed_info), Toast.LENGTH_SHORT).show()
-                        } else if (snackbarResult == SnackbarResult.Dismissed){
-                            Toast.makeText(context, "dismissed", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                },
-                onBackPress = {
-                    if (scaffoldState.drawerState.isOpen){
-                        scope.launch {
-                            scaffoldState.drawerState.open()
-                        }
-                    }
-                }
-            )
-        },
-        drawerGesturesEnabled = scaffoldState.drawerState.isOpen
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = stringResource(id = R.string.hello_world))
         }
     }
 }
